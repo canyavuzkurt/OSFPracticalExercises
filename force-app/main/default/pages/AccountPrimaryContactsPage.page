@@ -31,8 +31,14 @@
                 
             </apex:pageBlock>
         </apex:form>
+        <apex:form>
+            <apex:pageBlock title="Search related contacts">
+                <apex:inputText label="Search" value="{!searchVar}" />
+                <apex:commandButton value="Search" reRender="relatedTable" />
+            </apex:pageBlock>
+        </apex:form>
         <apex:pageBlock title="Related Contacts">
-            <apex:pageBlockTable value="{!relatedContacts}" var="contact" rows="1000">
+            <apex:pageBlockTable value="{!relatedContacts}" var="contact" rows="1000" id="relatedTable">
                 <apex:column value="{!contact.Name}" />
                 <apex:column value="{!contact.Title}" />
                 <apex:column value="{!contact.Phone}" />
