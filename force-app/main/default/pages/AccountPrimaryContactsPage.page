@@ -1,4 +1,4 @@
-<apex:page standardController="Account" sidebar="true" showHeader="true">
+<apex:page standardController="Account" extensions="primaryContactExtension" sidebar="true" showHeader="true">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -30,6 +30,19 @@
                 </apex:pageBlockSection>
                 
             </apex:pageBlock>
+        </apex:form>
+        <apex:pageBlock title="Related Contacts">
+            <apex:pageBlockTable value="{!relatedContacts}" var="contact" rows="1000">
+                <apex:column value="{!contact.Name}" />
+                <apex:column value="{!contact.Title}" />
+                <apex:column value="{!contact.Phone}" />
+                <apex:column value="{!contact.Is_Primary_Contact__c}" />
+                <apex:column rendered="{! If(contact.Is_Primary_Contact__c==true ,false,true) }" value="{!'heyo'}" />
+                <apex:column rendered="{! If(contact.Is_Primary_Contact__c==true ,true,false) }">
+                    <apex:image url="https://test.salesforce.com/img/icon/macro24.png" />
+                </apex:column>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
 
     </body>
 </apex:page>
