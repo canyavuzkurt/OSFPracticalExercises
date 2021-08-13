@@ -45,19 +45,16 @@ public with sharing class primaryContactExtension {
     private Contact getPrimContact() {
         Contact primContact = null;
         try {
-            primContact = [SELECT Id, AccountId, Is_Primary_Contact__c FROM Contact WHERE Id=:primContactId];
+            primContact = [SELECT Id, AccountId, Is_Primary_Contact__c FROM Contact WHERE Id=:primContactId LIMIT 1];
 
-        } catch (DmlException e) {
-            throw new AuraHandledException('No contact exist with the given id.');
+        } catch (QueryException e) {
 
+            throw new NoSuchElementException('No contact exist with the given id.');
         }
         
         if (primContact.AccountId != acct.Id) {
-            throw new AuraHandledException('Given contact does not belong to this account.');
+            throw new IllegalArgumentException('Given contact does not belong to this account.');
 
-        }
-        if (primContact.Is_Primary_Contact__c) {
-            throw new AuraHandledException('Given contact is already the primary contact.');
         }
 
         return primContact;
