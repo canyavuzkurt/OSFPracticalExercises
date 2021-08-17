@@ -37,42 +37,46 @@
                 <apex:commandButton value="Search" reRender="relatedTable" />
             </apex:pageBlock>
         </apex:form>
-        <apex:pageBlock title="Related Contacts">
-            <apex:pageBlockTable value="{!relatedContacts}" var="contact" rows="1000" id="relatedTable">
-                <apex:column value="{!contact.Name}" />
-                <apex:column value="{!contact.Title}" />
-                <apex:column value="{!contact.Phone}" />
-                <apex:column value="{!contact.Is_Primary_Contact__c}" />
-                <!-- Show an icon if this contact is the primary contact -->
-                <apex:column rendered="{! If(contact.Is_Primary_Contact__c==true ,true,false) }">
-                    <apex:image url="https://test.salesforce.com/img/icon/macro24.png" />
-                </apex:column>
-                <!-- Show Set As Primary link if the current contact is not the primary contact -->
-                <apex:column rendered="{! If(contact.Is_Primary_Contact__c==true ,false,true) }" >
-                    <apex:form>
-                        <apex:commandLink action="{!showPopup}" reRender="popup">
-                            Set As Primary
-                            <apex:param name="PrimaryContact" value="{!contact.Id}" assignTo="{!primContactId}" />
-                        </apex:commandLink>
-                    
-                        <!-- Popup works very slow in pure apex. A possible solution would be using javascript, -->
-                        <!-- But by using js you introduce the possibility of cross-browser and maintenance issues-->
-                        <!-- That you don't have while using visualforce. -->
-                        <apex:outputPanel id="popup">
-                            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}" />
-                            <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUp}">
-                                Are you sure you want to set this contact as your PrimaryContact?
-                                <br/>
-                                <apex:commandButton value="Yes" action="{!setPrimaryContact}" reRender="relatedTable">
-                                    <apex:actionSupport event="onclick" action="{!closePopup}" reRender="popup"/>
-                                </apex:commandButton>
-                                <apex:commandButton value="No" action="{!closePopup}" reRender="popup" />
+        <apex:form>
+            <apex:pageBlock title="Related Contacts">
+                <apex:pageBlockButtons>
+                    <apex:commandButton action="{!prevPage}" value="Previous Page" reRender="relatedTable"/>
+                    <apex:commandButton action="{!nextPage}" value="Next Page" reRender="relatedTable"/>
+                </apex:pageBlockButtons>
+                <apex:pageBlockTable value="{!relatedContacts}" var="contact" rows="1000" id="relatedTable">
+                    <apex:column value="{!contact.Name}" />
+                    <apex:column value="{!contact.Title}" />
+                    <apex:column value="{!contact.Phone}" />
+                    <apex:column value="{!contact.Is_Primary_Contact__c}" />
+                    <!-- Show an icon if this contact is the primary contact -->
+                    <apex:column rendered="{! If(contact.Is_Primary_Contact__c==true ,true,false) }">
+                        <apex:image url="https://test.salesforce.com/img/icon/macro24.png" />
+                    </apex:column>
+                    <!-- Show Set As Primary link if the current contact is not the primary contact -->
+                    <apex:column rendered="{! If(contact.Is_Primary_Contact__c==true ,false,true) }" >
+                            <apex:commandLink action="{!showPopup}" reRender="popup">
+                                Set As Primary
+                                <apex:param name="PrimaryContact" value="{!contact.Id}" assignTo="{!primContactId}" />
+                            </apex:commandLink>
+                        
+                            <!-- Popup works very slow in pure apex. A possible solution would be using javascript, -->
+                            <!-- But by using js you introduce the possibility of cross-browser and maintenance issues-->
+                            <!-- That you don't have while using visualforce. -->
+                            <apex:outputPanel id="popup">
+                                <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}" />
+                                <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUp}">
+                                    Are you sure you want to set this contact as your PrimaryContact?
+                                    <br/>
+                                    <apex:commandButton value="Yes" action="{!setPrimaryContact}" reRender="relatedTable">
+                                        <apex:actionSupport event="onclick" action="{!closePopup}" reRender="popup"/>
+                                    </apex:commandButton>
+                                    <apex:commandButton value="No" action="{!closePopup}" reRender="popup" />
+                                </apex:outputPanel>
                             </apex:outputPanel>
-                        </apex:outputPanel>
-                    </apex:form>
-                </apex:column>
-            </apex:pageBlockTable>
-        </apex:pageBlock>
+                    </apex:column>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:form>
 
     </body>
 

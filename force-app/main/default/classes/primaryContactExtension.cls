@@ -9,13 +9,16 @@
  * History:
  * Date:                Modified By:                         Description:
  * August 13, 2021      Can Yavuzkurt                        Created
+ * August 17, 2021      Can Yavuzkurt                        Implemented pagination for related contacts
  */
 public with sharing class primaryContactExtension {
 
     private final Account acct;
+    private final Integer pageSize=20;
     public String searchVar{get; set;}
     public boolean displayPopup{get; set;}
     public String primContactId{get; set;}
+    public Integer page{get; set;}
 
     /**
      * @author Can Yavuzkurt
@@ -25,7 +28,8 @@ public with sharing class primaryContactExtension {
      * @param ApexPages.StandardController stdController
     */
     public primaryContactExtension(ApexPages.StandardController stdController) {
-        this.acct = (Account)stdController.getRecord(); 
+        this.acct = (Account)stdController.getRecord();
+        this.page=0;
     }
 
     /**
@@ -36,15 +40,15 @@ public with sharing class primaryContactExtension {
     */
     public List<Contact> getRelatedContacts() {
         try {
-            
+
             if (searchVar == null || searchVar == '') {
-            return [SELECT Id, Name, Title, Phone, Is_Primary_Contact__c FROM Contact WHERE AccountId=:acct.Id Limit 1000];
+            return [SELECT Id, Name, Title, Phone, Is_Primary_Contact__c FROM Contact WHERE AccountId=:acct.Id Limit :pageSize OFFSET :page*pageSize];
         }
         else {
 
             String escapedString = string.escapeSingleQuotes(searchVar);
             escapedString = '%' + escapedString + '%';
-            return [SELECT Id, Name, Title, Phone, Is_Primary_Contact__c FROM Contact WHERE AccountId=:acct.Id AND Name like :escapedString Limit 1000];
+            return [SELECT Id, Name, Title, Phone, Is_Primary_Contact__c FROM Contact WHERE AccountId=:acct.Id AND Name like :escapedString Limit :pageSize OFFSET :page*pageSize];
         }
         } catch (QueryException e) {
             
@@ -89,7 +93,6 @@ public with sharing class primaryContactExtension {
 
     }
 
-    // Check possible exceptions while retrieving new primary contact.
     /**
      * @author Can Yavuzkurt
      * @date August 13, 2021
@@ -107,17 +110,56 @@ public with sharing class primaryContactExtension {
         }
         
         if (primContact.AccountId != acct.Id) {
-            throw new IllegalArgumentException('Given contact does not belong to this account.');
 
+            throw new IllegalArgumentException('Given contact does not belong to this account.');
         }
 
         return primContact;
     }
 
+    /**
+     * @author Can Yavuzkurt
+     * @date August 13, 2021
+     * @description Closes popup
+     * @name closePopup
+    */
     public void closePopup() {        
         displayPopup = false;    
     }     
+
+     /**
+     * @author Can Yavuzkurt
+     * @date August 13, 2021
+     * @description Shows popup
+     * @name showPopup
+    */
     public void showPopup() {        
         displayPopup = true;    
+    }
+
+     /**
+     * @author Can Yavuzkurt
+     * @date August 17, 2021
+     * @description Goes to next page
+     * @name nextPage
+    */
+    public void nextPage() {
+
+        this.page +=1;
+    }
+
+    /**
+     * @author Can Yavuzkurt
+     * @date August 17, 2021
+     * @description Goes to previous page
+     * @name prevPage
+    */
+    public void prevPage() {
+
+        this.page -=1;
+        if (this.page<0) {
+            
+            this.page = 0;
+        }
     }
 }
