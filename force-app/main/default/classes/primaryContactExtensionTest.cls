@@ -1,5 +1,5 @@
 @IsTest
-public with sharing class primaryContactExtensionTest {
+private with sharing class primaryContactExtensionTest {
 
     // Since testing controller extension requires boilerplate code,
     // this helper function reduces code repetition
