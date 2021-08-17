@@ -35,14 +35,22 @@ public with sharing class primaryContactExtension {
      * @name getRelatedContacts
     */
     public List<Contact> getRelatedContacts() {
-        if (searchVar == null || searchVar == '') {
+        try {
+            
+            if (searchVar == null || searchVar == '') {
             return [SELECT Id, Name, Title, Phone, Is_Primary_Contact__c FROM Contact WHERE AccountId=:acct.Id Limit 1000];
         }
         else {
+
             String escapedString = string.escapeSingleQuotes(searchVar);
             escapedString = '%' + escapedString + '%';
             return [SELECT Id, Name, Title, Phone, Is_Primary_Contact__c FROM Contact WHERE AccountId=:acct.Id AND Name like :escapedString Limit 1000];
         }
+        } catch (QueryException e) {
+            
+            throw new HandledException(System.Label.Query_Error);
+        }
+        
     }
 
     /**
@@ -57,15 +65,27 @@ public with sharing class primaryContactExtension {
 
         // Retrieve and update the related contacts accordingly.
         List<Contact> contactsToUpdate = new List<Contact>();
-        for (Contact contact : [SELECT Id, Is_Primary_Contact__c FROM Contact WHERE AccountId=:acct.Id AND Is_Primary_Contact__c=true]) {
-                contact.Is_Primary_Contact__c = false;
-                contactsToUpdate.add(contact);
+        try {
             
+            for (Contact contact : [SELECT Id, Is_Primary_Contact__c FROM Contact WHERE AccountId=:acct.Id AND Is_Primary_Contact__c=true]) {
+                    contact.Is_Primary_Contact__c = false;
+                    contactsToUpdate.add(contact);
+                
+            }
+        } catch (QueryException e) {
+            
+            throw new HandledException(System.Label.Query_Error);
         }
         primContact.Is_Primary_Contact__c = true;
         contactsToUpdate.add(primContact);
 
-        update contactsToUpdate;
+        try {
+            
+            update contactsToUpdate;
+        } catch (DmlException e) {
+            
+            throw new HandledException(System.Label.Update_Error);
+        }
 
     }
 
