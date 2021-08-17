@@ -1,8 +1,26 @@
+/**
+ * File:        primaryContactExtensionTest.cls
+ * Project:     PracticalExercise1
+ * Date:        August 13, 2021
+ * Created By:  Can Yavuzkurt
+ * *************************************************************************
+ * Description: Contains tests for primaryContactExtension.cls
+ * *************************************************************************
+ * History:
+ * Date:                Modified By:                         Description:
+ * August 13, 2021      Can Yavuzkurt                        Created
+ */
 @IsTest
 private with sharing class primaryContactExtensionTest {
 
-    // Since testing controller extension requires boilerplate code,
-    // this helper function reduces code repetition
+    /**
+     * @author Can Yavuzkurt
+     * @date August 13, 2021
+     * @description Since testing controller extension requires boilerplate code,
+     *              this helper function reduces code repetition
+     * @name getObjToTest
+     * @param String accountName gets obj to test according to accountName
+    */
     static private primaryContactExtension getObjToTest(String accountName) {
 
         Account acc = [SELECT Id, (SELECT Id, AccountId FROM Account.Contacts) FROM Account WHERE Name=:accountName LIMIT 1];
@@ -14,6 +32,12 @@ private with sharing class primaryContactExtensionTest {
         return new primaryContactExtension(sc);
     }
 
+    /**
+     * @author Can Yavuzkurt
+     * @date August 13, 2021
+     * @description Creates the test data
+     * @name makeData
+    */
     @TestSetup
     static void makeData(){
 
@@ -34,6 +58,12 @@ private with sharing class primaryContactExtensionTest {
         insert testContacts;
     }
 
+    /**
+     * @author Can Yavuzkurt
+     * @date August 13, 2021
+     * @description Tests whether the given contact belongs to the account exception
+     * @name testContactDoesntBelong
+    */
     @IsTest
     static void testContactDoesntBelong(){
 
@@ -58,6 +88,12 @@ private with sharing class primaryContactExtensionTest {
         
     }
 
+    /**
+     * @author Can Yavuzkurt
+     * @date August 13, 2021
+     * @description Tests whether the given contact exist exception
+     * @name testContactDoesntExist
+    */
     @IsTest
     static void testContactDoesntExist(){
 
@@ -79,6 +115,12 @@ private with sharing class primaryContactExtensionTest {
         System.assertEquals('No contact exist with the given id.', thrown.getMessage());
     }
 
+    /**
+     * @author Can Yavuzkurt
+     * @date August 13, 2021
+     * @description Tests whether the primary contact is set accordingly.
+     * @name testPrimContactSet
+    */
     @IsTest
     static void testPrimContactSet(){
         
@@ -106,6 +148,12 @@ private with sharing class primaryContactExtensionTest {
         
     }
 
+    /**
+     * @author Can Yavuzkurt
+     * @date August 13, 2021
+     * @description Tests the search functionality
+     * @name testGetRelatedContacts
+    */
     @IsTest
     static void testGetRelatedContacts(){
 

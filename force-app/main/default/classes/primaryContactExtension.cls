@@ -1,3 +1,15 @@
+/**
+ * File:        primaryContactExtension.cls
+ * Project:     PracticalExercise1
+ * Date:        August 13, 2021
+ * Created By:  Can Yavuzkurt
+ * *************************************************************************
+ * Description:  Extension for Standard Account Controller that provides popup, search and pagination mechanism.
+ * *************************************************************************
+ * History:
+ * Date:                Modified By:                         Description:
+ * August 13, 2021      Can Yavuzkurt                        Created
+ */
 public with sharing class primaryContactExtension {
 
     private final Account acct;
@@ -5,13 +17,23 @@ public with sharing class primaryContactExtension {
     public boolean displayPopup{get; set;}
     public String primContactId{get; set;}
 
-    // The extension constructor initializes the private member
-    // variable acct by using the getRecord method from the standard
-    // controller.
+    /**
+     * @author Can Yavuzkurt
+     * @date August 13, 2021
+     * @description Constructor of class to initialze StandardController and acct
+     * @name primaryContactExtension
+     * @param ApexPages.StandardController stdController
+    */
     public primaryContactExtension(ApexPages.StandardController stdController) {
         this.acct = (Account)stdController.getRecord(); 
     }
 
+    /**
+     * @author Can Yavuzkurt
+     * @date August 13, 2021
+     * @description Search mechanism that can be used by Visualforce Pages.
+     * @name getRelatedContacts
+    */
     public List<Contact> getRelatedContacts() {
         if (searchVar == null || searchVar == '') {
             return [SELECT Id, Name, Title, Phone, Is_Primary_Contact__c FROM Contact WHERE AccountId=:acct.Id Limit 1000];
@@ -23,6 +45,12 @@ public with sharing class primaryContactExtension {
         }
     }
 
+    /**
+     * @author Can Yavuzkurt
+     * @date August 13, 2021
+     * @description Sets the current accounts PrimaryContact to given Contact
+     * @name setPrimaryContact
+    */
     public void setPrimaryContact() {
         closePopup();
         Contact primContact = getPrimContact();
@@ -42,6 +70,12 @@ public with sharing class primaryContactExtension {
     }
 
     // Check possible exceptions while retrieving new primary contact.
+    /**
+     * @author Can Yavuzkurt
+     * @date August 13, 2021
+     * @description Helper function that validates the given primary contact.
+     * @name getPrimContact
+    */
     private Contact getPrimContact() {
         Contact primContact = null;
         try {
