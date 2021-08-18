@@ -9,6 +9,7 @@
  * History:
  * Date:                Modified By:                         Description:
  * August 17, 2021      Can Yavuzkurt                        Created
+ * August 18, 2021      Can Yavuzkurt                        Added missing try/catch block
  */
 global with sharing class ContactPrimaryPhoneUpdater {
     
@@ -21,7 +22,15 @@ global with sharing class ContactPrimaryPhoneUpdater {
     @future
     public static void updatePrimaryPhoneOfAccount(Map<Id, String> accPrimPhoneMap) {
 
-        List<Contact> contacts = [Select Id, AccountId, Primary_Contact_Phone__c from Contact Where AccountId IN :accPrimPhoneMap.keySet()];
+        List<Contact> contacts;
+        try {
+            
+            contacts = [Select Id, AccountId, Primary_Contact_Phone__c from Contact Where AccountId IN :accPrimPhoneMap.keySet()];
+        } catch (QueryException e) {
+            
+            throw new HandledException(System.Label.Query_Error);
+        } 
+        
         for (Contact cnt : contacts) {
             
             cnt.Primary_Contact_Phone__c = accPrimPhoneMap.get(cnt.AccountId);
