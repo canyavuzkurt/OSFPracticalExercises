@@ -9,14 +9,20 @@
  * *************************************************************************
  * History:
  * Date:                Modified By:                         Description:
- * August 17, 2021      Can Yavuzkurt                        Created
- * August 18, 2021      Can Yavuzkurt                        Added missing try/catch block
+ * August 18, 2021      Can Yavuzkurt                        Created
  */
 public class SummarizeOppAmountsPerAccount implements Database.Batchable<sObject>, Database.Stateful {
 
     private Map<Id, Map<String,Decimal>> accountOpportunities = new Map<Id, Map<String,Decimal>>();
     private List<String> stages = new List<String>();
 
+    /**
+     * @author Can Yavuzkurt
+     * @date August 18, 2021
+     * @description Defines the scope of the batch
+     * @name start
+     * @param bc Database.BatchableContext batch context
+    */
     public Database.QueryLocator start(Database.BatchableContext bc) {
         
         stages.add('Closed Won');
@@ -26,6 +32,15 @@ public class SummarizeOppAmountsPerAccount implements Database.Batchable<sObject
             'SELECT Id, Account.Name, AccountId, Amount, StageName FROM Opportunity'
         );
     }
+
+    /**
+     * @author Can Yavuzkurt
+     * @date August 18, 2021
+     * @description Summarizes the opportunity amounts per Account per StageName
+     * @name execute
+     * @param bc Database.BatchableContext batch context
+     * @param records List<Opportunity> List of records to process
+    */
     public void execute(Database.BatchableContext bc, List<Opportunity> records){
         // process each batch of records
         for (Opportunity opp : records) {
@@ -50,6 +65,15 @@ public class SummarizeOppAmountsPerAccount implements Database.Batchable<sObject
             
         }
     }
+
+    /**
+     * @author Can Yavuzkurt
+     * @date August 18, 2021
+     * @description Creates and sends emails to all primary contacts with
+     *              the summarized opportunity amounts.
+     * @name finish
+     * @param bc Database.BatchableContext batch context
+    */
     public void finish(Database.BatchableContext bc){
         // execute any post-processing operations
         List<Contact> primContacts;
