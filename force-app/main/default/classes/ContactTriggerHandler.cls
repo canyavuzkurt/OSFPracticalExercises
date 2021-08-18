@@ -49,7 +49,7 @@ public with sharing class ContactTriggerHandler {
             Contact oldPrimaryContact = primContactMap.get(contact.AccountId);
             if ( contact.Is_Primary_Contact__c && oldPrimaryContact != null && oldPrimaryContact.Id != contact.Id) {
 
-                contact.addError('There is a primary contact associated with the account already.');
+                contact.addError(System.Label.Primary_Contact_Exists);
             }
         }
     }
