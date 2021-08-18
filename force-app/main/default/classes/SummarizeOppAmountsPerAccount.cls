@@ -85,6 +85,7 @@ public class SummarizeOppAmountsPerAccount implements Database.Batchable<sObject
             throw new HandledException(System.Label.Query_Error);
         }
 
+        List<Messaging.SingleEmailMessage> mails = new List<Messaging.SingleEmailMessage>();
         for (Contact primContact : primContacts) {
             
             String body = '<h4>Belows is a table of opportunities related to the acount: ' + primContact.Account.Name + '.</h4>';
@@ -122,7 +123,24 @@ public class SummarizeOppAmountsPerAccount implements Database.Batchable<sObject
             
             System.debug(primContact.Email);
             System.debug(body);
+
+            mails.add(createEmail(primContact.Email, primContact.Account.Name + ' Opportunity Summary', body));
+
         }
 
+        Messaging.sendEmail(mails);
+    }
+
+    private Messaging.SingleEmailMessage createEmail(String to, String subject, String body) {
+
+        Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+        email.setToAddresses(new String[]{to});
+        email.setSubject(subject);
+        email.setHtmlBody(body);
+        email.setUseSignature(true);
+        System.debug(email);
+        System.debug(to);
+
+        return email;
     }
 }
