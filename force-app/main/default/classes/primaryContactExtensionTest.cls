@@ -9,53 +9,64 @@
  * History:
  * Date:                Modified By:                         Description:
  * August 13, 2021      Can Yavuzkurt                        Created
+ * August 18, 2021      Can Yavuzkurt                        Updated the format
  */
 @IsTest
 private with sharing class primaryContactExtensionTest {
 
-    /**
-     * @author Can Yavuzkurt
-     * @date August 13, 2021
-     * @description Since testing controller extension requires boilerplate code,
-     *              this helper function reduces code repetition
-     * @name getObjToTest
-     * @param String accountName gets obj to test according to accountName
-    */
-    static private primaryContactExtension getObjToTest(String accountName) {
-
-        Account acc = [SELECT Id, (SELECT Id, AccountId FROM Account.Contacts) FROM Account WHERE Name=:accountName LIMIT 1];
-        PageReference testPage = Page.AccountPrimaryContactsPage; 
-        Test.setCurrentPage(testPage);
-        testPage.getParameters().put('Id', String.valueOf(acc.Id));
-
-        ApexPages.StandardController sc = new  ApexPages.StandardController(acc);
-        return new primaryContactExtension(sc);
-    }
+    private static primaryContactExtension ext;
 
     /**
      * @author Can Yavuzkurt
-     * @date August 13, 2021
+     * @date August 18, 2021
      * @description Creates the test data
-     * @name makeData
+     * @name initData
     */
-    @TestSetup
-    static void makeData(){
+    private static void initData(String actionToDo){
 
-        List<Account> testAccounts = new List<Account>();
-        Account act = new Account(Name='Test w/ Contact');
-        testAccounts.add(act);
-        testAccounts.add(new Account(Name='Test No Contact'));
+        switch on actionToDo {
 
-        insert testAccounts;
+            when 'Test With Contact' {
 
-        List<Contact> testContacts = new List<Contact>();
-        for (Integer i = 0; i < 500; i++) {
-            
-            testContacts.add(new Contact(LastName='primcontacttest'+i, Salutation='Ms.', AccountId=act.Id));
+                Account accWithContact = new Account(Name='Test w/ Contact');
+                insert accWithContact;
+
+                List<Contact> testContacts = new List<Contact>();
+                for (Integer i = 0; i < 500; i++) {
+                    
+                    testContacts.add(new Contact(LastName='primcontacttest'+i, Salutation='Ms.', AccountId=accWithContact.Id));
+                }
+                testContacts[0].Is_Primary_Contact__c = true;
+                
+                insert testContacts;
+
+                PageReference testPage = Page.AccountPrimaryContactsPage; 
+                Test.setCurrentPage(testPage);
+                testPage.getParameters().put('Id', String.valueOf(accWithContact.Id));
+
+                ApexPages.StandardController sc = new  ApexPages.StandardController(accWithContact);
+                ext = new primaryContactExtension(sc);
+                ext.primContactId = testContacts[100].Id;
+
+            }
+            when 'Test No Contact' {
+
+                Account accWithoutContact = new Account(Name='Test No Contact');
+                insert accWithoutContact;
+
+                Contact someContact = new Contact(LastName='throwaway');
+                insert someContact;
+
+                PageReference testPage = Page.AccountPrimaryContactsPage; 
+                Test.setCurrentPage(testPage);
+                testPage.getParameters().put('Id', String.valueOf(accWithoutContact.Id));
+
+                ApexPages.StandardController sc = new  ApexPages.StandardController(accWithoutContact);
+                ext = new primaryContactExtension(sc);
+                ext.primContactId = someContact.Id;
+
+            }
         }
-        testContacts[0].Is_Primary_Contact__c = true;
-        
-        insert testContacts;
     }
 
     /**
@@ -67,11 +78,7 @@ private with sharing class primaryContactExtensionTest {
     @IsTest
     static void testContactDoesntBelong(){
 
-        // Setup
-        primaryContactExtension ext = getObjToTest('Test No Contact');
-
-        Contact contact = [SELECT Id, AccountId FROM Contact WHERE LastName='primcontacttest100' LIMIT 1];
-        ext.primContactId = contact.Id;
+        initData('Test No Contact');
         
         Test.startTest();
         IllegalArgumentException thrown;
@@ -85,7 +92,6 @@ private with sharing class primaryContactExtensionTest {
         Test.stopTest();
 
         System.assertEquals('Given contact does not belong to this account.', thrown.getMessage());
-        
     }
 
     /**
@@ -97,7 +103,7 @@ private with sharing class primaryContactExtensionTest {
     @IsTest
     static void testContactDoesntExist(){
 
-        primaryContactExtension ext = getObjToTest('Test w/ Contact');
+        initData('Test With Contact');
 
         ext.primContactId = 'SOMERANDOMTXT';
         
@@ -124,11 +130,7 @@ private with sharing class primaryContactExtensionTest {
     @IsTest
     static void testPrimContactSet(){
         
-        primaryContactExtension ext = getObjToTest('Test w/ Contact');
-
-        Contact primContact = [SELECT Id, AccountId, Is_Primary_Contact__c FROM Contact WHERE LastName='primcontacttest100' LIMIT 1];
-
-        ext.primContactId = primContact.Id;
+        initData('Test With Contact');
         
         Test.startTest();
         ext.setPrimaryContact();
@@ -157,15 +159,15 @@ private with sharing class primaryContactExtensionTest {
     @IsTest
     static void testGetRelatedContacts(){
 
-        primaryContactExtension ext = getObjToTest('Test w/ Contact');
+        initData('Test With Contact');
 
-        ext.searchVar = 'primcontacttest';
+        ext.searchVar = 'primcontacttest10';
         
         Test.startTest();
         List<Contact> results = ext.getRelatedContacts();
         Test.stopTest();
 
-        System.assertEquals(500, results.size());
+        System.assertEquals(11, results.size());
         
     }
 }
