@@ -81,11 +81,11 @@ public with sharing class primaryContactExtension {
             throw new HandledException(System.Label.Query_Error);
         }
         primContact.Is_Primary_Contact__c = true;
-        contactsToUpdate.add(primContact);
 
         try {
             
             update contactsToUpdate;
+            update primContact;
         } catch (DmlException e) {
             
             throw new HandledException(System.Label.Update_Error);
