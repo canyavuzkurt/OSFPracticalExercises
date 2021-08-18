@@ -30,7 +30,13 @@ public with sharing class ContactTriggerHandler {
 
         // Construct AccountId, PrimaryContact pair map
         Map<Id, Contact> primContactMap = new Map<Id, Contact>();
-        List<Contact> primContacts = [SELECT Id, AccountId FROM Contact WHERE AccountId IN :accountIds AND Is_Primary_Contact__c = true];
+        try {
+            
+            List<Contact> primContacts = [SELECT Id, AccountId FROM Contact WHERE AccountId IN :accountIds AND Is_Primary_Contact__c = true];
+        } catch (QueryException e) {
+            
+            throw new HandledException(System.Label.Query_Error);
+        }
         for (Contact primContact : primContacts) {
             
             primContactMap.put(primContact.AccountId, primContact);
