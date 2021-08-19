@@ -29,7 +29,7 @@ public class SummarizeOppAmountsPerAccount implements Database.Batchable<sObject
         stages.add('Open');
         stages.add('Closed Lost');
         return Database.getQueryLocator(
-            'SELECT Id, Account.Name, AccountId, Amount, StageName FROM Opportunity'
+            'SELECT Id, Account.Name, AccountId, Amount, StageName FROM Opportunity WHERE StageName IN :stages'
         );
     }
 
