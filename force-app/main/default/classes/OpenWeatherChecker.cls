@@ -9,6 +9,7 @@
  * History:
  * Date:                Modified By:                         Description:
  * August 19, 2021      Can Yavuzkurt                        Created
+ * August 20, 2021      Can Yavuzkurt                        Updated endpoint url
  */
 public with sharing class OpenWeatherChecker {
     
@@ -30,7 +31,7 @@ public with sharing class OpenWeatherChecker {
 
         Http http = new Http();
         HttpRequest request = new HttpRequest();
-        request.setEndpoint('api.openweathermap.org/data/2.5/weather?q=' + cityName + '&APPID=' + apiKey);
+        request.setEndpoint('https://api.openweathermap.org/data/2.5/weather?q=' + cityName + '&APPID=' + apiKey);
         request.setMethod('GET');
         HttpResponse response = http.send(request);
         // If the request is successful, parse the JSON response.
