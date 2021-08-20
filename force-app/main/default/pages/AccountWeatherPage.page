@@ -1,0 +1,22 @@
+<apex:page standardController="Account" extensions="accountWeatherExtension">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Account Primary Contacts</title>
+        <!-- Import the Design System style sheet -->
+        <apex:slds />
+    </head>
+
+
+    <body>
+        <apex:pageBlock title="{! 'Weather in ' + Account.BillingCity + ':'} ">
+            <apex:pageBlockSection columns="2" >
+                <apex:outputText value="{!'Description: ' + weatherDescription}"/>
+                <apex:outputText value="{!'Temperature: ' + temperature}" />
+            </apex:pageBlockSection>
+            <apex:pageBlockSection columns="2">
+                <apex:image url="{!weatherIconUrl}" />
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </body>
+</apex:page>
