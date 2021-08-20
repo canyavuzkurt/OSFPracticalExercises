@@ -44,7 +44,7 @@ private class OpenWeatherCheckerTest {
     static void testCityNotFound() {
 
         // Set mock callout class 
-        Test.setMock(HttpCalloutMock.class, new WeatherHttpCalloutMock()); 
+        Test.setMock(HttpCalloutMock.class, new WeatherNoCityHttpCalloutMock()); 
         // This causes a fake response to be sent
         // from the class that implements HttpCalloutMock. 
         Test.startTest();
@@ -71,7 +71,7 @@ private class OpenWeatherCheckerTest {
     static void testFailToRetrieveWeather() {
 
         // Set mock callout class 
-        Test.setMock(HttpCalloutMock.class, new WeatherHttpCalloutMock()); 
+        Test.setMock(HttpCalloutMock.class, new WeatherFailHttpCalloutMock()); 
         // This causes a fake response to be sent
         // from the class that implements HttpCalloutMock. 
         Test.startTest();
